@@ -8,8 +8,6 @@ from storage_supabase import update_points
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
-app = Application.builder().token(TOKEN).build()
-
 async def enviar_quiz(context: ContextTypes.DEFAULT_TYPE):
     pergunta, opcoes, correta = gerar_pergunta()
     texto = f"🎬 *Quiz de Cinema e Cultura Pop!*\n\n{pergunta}\n"
@@ -21,10 +19,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Olá! Sou o bot de quizzes de cinema 🎥")
     await enviar_quiz(context)
 
-def main():
+async def main():
+    app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
+    # JobQueue para enviar quiz a cada 45 minutos
     app.job_queue.run_repeating(enviar_quiz, interval=45*60, first=5)
-    app.run_polling()
+    await app.run_polling()
 
 if __name__ == "__main__":
     asyncio.run(main())

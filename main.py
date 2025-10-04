@@ -5,9 +5,9 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from quiz_gemini import gerar_pergunta
 from storage_supabase import update_points
 
-# Variáveis do ambiente
+# Variáveis de ambiente
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
-CHAT_ID = os.environ.get("CHAT_ID")  # ID do grupo ou usuário que receberá os quizzes
+CHAT_ID = os.environ.get("CHAT_ID")  # ID do grupo ou usuário
 
 # Cria aplicação do Telegram
 app = Application.builder().token(TOKEN).build()
@@ -25,15 +25,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Olá! Sou o bot de quizzes de cinema 🎥")
     await enviar_quiz(context)
 
-# Scheduler para enviar quiz a cada 45 minutos
+# Scheduler para envio automático
 async def job_scheduler():
     app.job_queue.run_repeating(enviar_quiz, interval=45*60, first=5)
 
 def main():
-    # Adiciona comandos
+    # Adiciona comando /start
     app.add_handler(CommandHandler("start", start))
     
-    # Agenda envio automático
+    # Agenda envio automático a cada 45 minutos
     app.job_queue.run_repeating(enviar_quiz, interval=45*60, first=5)
     
     # Roda o bot

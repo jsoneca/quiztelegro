@@ -1,4 +1,4 @@
 python-telegram-bot==20.6
-supabase
-openai
-requests
+requests==2.32.3
+openai==1.40.0
+Flask==3.0.2

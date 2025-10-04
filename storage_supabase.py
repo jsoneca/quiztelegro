@@ -1,27 +1,35 @@
+import os
 from supabase import create_client
 
-def create_supabase_client():
-    url = "https://YOUR_SUPABASE_URL.supabase.co"
-    key = "YOUR_SUPABASE_KEY"
-    return create_client(url, key)
+# Pega as variáveis do ambiente
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
-supabase = create_supabase_client()
+# Cria cliente do Supabase
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def get_user(user_id):
-    data = supabase.table("usuarios").select("*").eq("user_id", user_id).execute()
-    if data.data:
-        return data.data[0]
+    res = supabase.table("usuarios").select("*").eq("user_id", user_id).execute()
+    if res.data:
+        return res.data[0]
     else:
-        return None
+        # Cria usuário se não existir
+        supabase.table("usuarios").insert({"user_id": user_id, "pontos": 0, "nivel": 1}).execute()
+        return {"user_id": user_id, "pontos": 0, "nivel": 1}
 
-def update_points(user_id, points):
+def update_points(user_id, pontos_ganhos):
     user = get_user(user_id)
-    if user:
-        total = user["pontos"] + points
-        supabase.table("usuarios").update({"pontos": total}).eq("user_id", user_id).execute()
-    else:
-        supabase.table("usuarios").insert({"user_id": user_id, "pontos": points}).execute()
+    novos_pontos = user["pontos"] + pontos_ganhos
+    nivel = user["nivel"]
+    pontos_para_subir = 100 * nivel
+
+    while novos_pontos >= pontos_para_subir:
+        novos_pontos -= pontos_para_subir
+        nivel += 1
+        pontos_para_subir = 100 * nivel
+
+    supabase.table("usuarios").update({"pontos": novos_pontos, "nivel": nivel}).eq("user_id", user_id).execute()
 
 def get_ranking():
-    data = supabase.table("usuarios").select("*").order("pontos", desc=True).limit(10).execute()
-    return data.data
+    res = supabase.table("usuarios").select("user_id, pontos, nivel").order("nivel", desc=True).execute()
+    return res.data

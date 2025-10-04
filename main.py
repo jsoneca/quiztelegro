@@ -2,7 +2,7 @@ import os
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 import quiz_ai
-from storage_supabase import get_user, update_points, get_ranking
+from storage_supabase import salvar_usuario, atualizar_pontos, obter_usuario
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 QUIZ_CACHE = {}

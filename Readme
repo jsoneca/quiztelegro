@@ -1,0 +1,6 @@
+quiztelegro/
+ ├── main.py
+ ├── storage_supabase.py
+ ├── quiz_ai.py
+ ├── requirements.txt
+ └── Procfile

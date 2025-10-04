@@ -1,6 +1,6 @@
-quiztelegro/
- ├── main.py
- ├── storage_supabase.py
- ├── quiz_ai.py
- ├── requirements.txt
- └── Procfile
+quiz-bot-ai/
+ ├── main.py                # código principal
+ ├── quiz_ai.py             # geração de perguntas com IA
+ ├── storage_supabase.py    # integração com Supabase
+ ├── requirements.txt       # dependências
+ └── Procfile               # instrução de execução

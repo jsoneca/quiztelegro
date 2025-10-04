@@ -1,12 +1,12 @@
 import os
-from supabase import Client, create_client
+from supabase import create_client
 
-# Variáveis de ambiente
+# Variáveis do ambiente
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
-# Cria o cliente Supabase (v2)
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Cliente Supabase v1
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Funções para gerenciar usuários e pontos
 def get_user(user_id):

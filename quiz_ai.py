@@ -34,7 +34,7 @@ def gerar_pergunta():
             opcoes.append(linha.split(")", 1)[1].strip())
         elif "resposta correta" in linha.lower():
             letra = linha.split(":")[1].strip().upper()[0]
-            correta = {"A": 0, "B": 1, "C": 2, "D": 3}[letra]
+            correta = {"A":0,"B":1,"C":2,"D":3}[letra]
     if not pergunta or len(opcoes) < 4:
         pergunta = "Qual desses é um animal?"
         opcoes = ["Cadeira", "Carro", "Cachorro", "Pedra"]

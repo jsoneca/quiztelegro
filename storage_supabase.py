@@ -1,27 +1,45 @@
 import os
-from supabase import create_client, Client
+import requests
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+headers = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json"
+}
 
-def get_user(user_id: int):
-    resp = supabase.table("users").select("pontos,nivel").eq("user_id", user_id).maybe_single().execute()
-    item = getattr(resp, "data", None)
-    if item:
-        return {"pontos": int(item.get("pontos", 0)), "nivel": int(item.get("nivel", 1))}
-    return {"pontos": 0, "nivel": 1}
+def salvar_usuario(user_id, username):
+    url = f"{SUPABASE_URL}/rest/v1/usuarios"
+    data = {"user_id": str(user_id), "username": username}
+    get_res = requests.get(url, headers=headers, params={"user_id": f"eq.{user_id}"})
+    if get_res.status_code == 200 and len(get_res.json()) > 0:
+        return
+    res = requests.post(url, headers=headers, json=data)
+    if res.status_code not in (200, 201):
+        print("❌ Erro ao salvar usuário:", res.text)
 
-def update_points(user_id: int, acerto: bool):
-    stats = get_user(user_id)
-    pontos = stats["pontos"] + (10 if acerto else 0)
-    nivel = pontos // 50 + 1
-    payload = {"user_id": user_id, "pontos": pontos, "nivel": nivel}
-    supabase.table("users").upsert(payload).execute()
-    return {"pontos": pontos, "nivel": nivel}
+def atualizar_pontos(user_id, pontos_ganhos):
+    url = f"{SUPABASE_URL}/rest/v1/usuarios"
+    get_res = requests.get(url, headers=headers, params={"user_id": f"eq.{user_id}"})
+    if get_res.status_code != 200 or len(get_res.json()) == 0:
+        print("⚠️ Usuário não encontrado ao atualizar pontos.")
+        return
+    usuario = get_res.json()[0]
+    novos_pontos = usuario["pontos"] + pontos_ganhos
+    novo_nivel = usuario["nivel"]
+    if novos_pontos >= novo_nivel * 100:
+        novo_nivel += 1
+    patch_data = {"pontos": novos_pontos, "nivel": novo_nivel}
+    res = requests.patch(f"{url}?user_id=eq.{user_id}", headers=headers, json=patch_data)
+    if res.status_code not in (200, 204):
+        print("❌ Erro ao atualizar pontos:", res.text)
 
-def get_ranking(limit: int = 10):
-    resp = supabase.table("users").select("user_id,pontos,nivel").order("pontos", desc=True).limit(limit).execute()
-    data = getattr(resp, "data", []) or []
-    return [(int(item["user_id"]), int(item["pontos"]), int(item["nivel"])) for item in data]
+def obter_usuario(user_id):
+    url = f"{SUPABASE_URL}/rest/v1/usuarios"
+    res = requests.get(url, headers=headers, params={"user_id": f"eq.{user_id}"})
+    if res.status_code == 200 and len(res.json()) > 0:
+        return res.json()[0]
+    else:
+        return None

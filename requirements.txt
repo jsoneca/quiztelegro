@@ -1,5 +1,14 @@
-python-telegram-bot[job_queue]==20.0
+# Telegram bot com suporte a webhooks
+python-telegram-bot[webhooks]==20.6
+
+# Gemini AI
 google-generativeai==0.7.2
+
+# Supabase v1 (compatível com httpx 0.23.x)
 supabase==1.0.3
+
+# HTTP requests
 requests==2.31.0
+
+# Forçando a versão do httpx compatível com Supabase v1
 httpx==0.23.1

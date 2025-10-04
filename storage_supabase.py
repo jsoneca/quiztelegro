@@ -2,7 +2,7 @@ import os
 import requests
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 headers = {
     "apikey": SUPABASE_KEY,
@@ -12,10 +12,10 @@ headers = {
 
 def salvar_usuario(user_id, username):
     url = f"{SUPABASE_URL}/rest/v1/usuarios"
-    data = {"user_id": str(user_id), "username": username, "pontos":0, "nivel":1}
     get_res = requests.get(url, headers=headers, params={"user_id": f"eq.{user_id}"})
     if get_res.status_code == 200 and len(get_res.json()) > 0:
         return
+    data = {"user_id": str(user_id), "username": username, "pontos":0, "nivel":1}
     res = requests.post(url, headers=headers, json=data)
     if res.status_code not in (200, 201):
         print("Erro ao salvar usuário:", res.text)
@@ -26,11 +26,10 @@ def atualizar_pontos(user_id, pontos_ganhos=135):
     if get_res.status_code != 200 or len(get_res.json()) == 0:
         print("Usuário não encontrado.")
         return
-
     usuario = get_res.json()[0]
     novos_pontos = usuario.get("pontos", 0) + pontos_ganhos
     nivel = usuario.get("nivel", 1)
-    pontos_para_subir = 100 * nivel  # Cada level precisa de mais pontos
+    pontos_para_subir = 100 * nivel
 
     while novos_pontos >= pontos_para_subir:
         novos_pontos -= pontos_para_subir

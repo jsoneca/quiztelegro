@@ -1,9 +1,12 @@
 import os
-import asyncio
+import nest_asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from quiz_gemini import gerar_pergunta
 from storage_supabase import update_points
+
+# Permite rodar em ambientes que já têm loop de eventos
+nest_asyncio.apply()
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
@@ -27,4 +30,5 @@ async def main():
     await app.run_polling()
 
 if __name__ == "__main__":
+    import asyncio
     asyncio.run(main())

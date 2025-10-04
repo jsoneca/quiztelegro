@@ -3,4 +3,4 @@ quiz-bot-ai/
  ├── quiz_ai.py             # geração de quizzes com IA (OpenAI)
  ├── storage_supabase.py    # armazenamento e pontuação (Supabase)
  ├── requirements.txt       # dependências
- └── Procfile               # instruções para o Render
+ ├── Dockerfile

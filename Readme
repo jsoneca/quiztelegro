@@ -1,6 +1,8 @@
-/telegram-quiz-bot-gemini
+quiztelegro/
+│
 ├── main.py
 ├── quiz_gemini.py
 ├── storage_supabase.py
 ├── requirements.txt
-└── .github/workflows/bot.yml
+├── Dockerfile
+└── README.md

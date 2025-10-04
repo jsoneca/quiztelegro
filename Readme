@@ -1,6 +1,6 @@
-quiz-bot-ai/
- ├── main.py                # código principal do bot Telegram
- ├── quiz_ai.py             # geração de quizzes com IA (OpenAI)
- ├── storage_supabase.py    # armazenamento e pontuação (Supabase)
- ├── requirements.txt       # dependências
- ├── Dockerfile
+/ (raiz do projeto)
+├── main.py
+├── storage_supabase.py
+├── quiz_ai.py
+├── requirements.txt
+└── Dockerfile

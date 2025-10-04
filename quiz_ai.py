@@ -16,21 +16,16 @@ def gerar_pergunta():
     D) ...
     Resposta correta: (A, B, C ou D)
     """
-
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7
     )
-
     texto = response.choices[0].message.content
-
-    # Processa a resposta da IA
     linhas = texto.splitlines()
     pergunta = ""
     opcoes = []
     correta = 0
-
     for linha in linhas:
         linha = linha.strip()
         if linha.lower().startswith("pergunta"):
@@ -40,17 +35,12 @@ def gerar_pergunta():
         elif "resposta correta" in linha.lower():
             letra = linha.split(":")[1].strip().upper()[0]
             correta = {"A": 0, "B": 1, "C": 2, "D": 3}[letra]
-
-    # Em caso de erro de parsing
     if not pergunta or len(opcoes) < 4:
         pergunta = "Qual desses é um animal?"
         opcoes = ["Cadeira", "Carro", "Cachorro", "Pedra"]
         correta = 2
-
-    # Embaralha opções para não repetir sempre igual
     indices = list(range(len(opcoes)))
     random.shuffle(indices)
     opcoes = [opcoes[i] for i in indices]
     correta = indices.index(correta)
-
     return pergunta, opcoes, correta

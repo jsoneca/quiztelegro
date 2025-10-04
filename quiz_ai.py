@@ -1,18 +1,56 @@
 import os
-import openai
-openai.api_key = os.environ.get("OPENAI_API_KEY")
+from openai import OpenAI
+import random
 
-def gerar_quiz():
-    prompt = "Crie uma pergunta de múltipla escolha simples com 4 opções (A-D) e indique a correta."
-    resp = openai.chat.completions.create(
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def gerar_pergunta():
+    prompt = """
+    Gere uma pergunta de múltipla escolha sobre cultura geral.
+    Retorne no formato:
+    Pergunta: ...
+    Opções:
+    A) ...
+    B) ...
+    C) ...
+    D) ...
+    Resposta correta: (A, B, C ou D)
+    """
+
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
+        temperature=0.7
     )
-    texto = resp.choices[0].message.content.strip()
 
-    # exemplo de retorno esperado (ajuste parsing conforme sua IA gera)
-    return {
-        "pergunta": "Qual é a capital da França?",
-        "opcoes": ["A) Paris", "B) Londres", "C) Roma", "D) Berlim"],
-        "correta": "A"
-    }
+    texto = response.choices[0].message.content
+
+    # Processa a resposta da IA
+    linhas = texto.splitlines()
+    pergunta = ""
+    opcoes = []
+    correta = 0
+
+    for linha in linhas:
+        linha = linha.strip()
+        if linha.lower().startswith("pergunta"):
+            pergunta = linha.split(":", 1)[1].strip()
+        elif any(linha.startswith(x) for x in ["A)", "B)", "C)", "D)"]):
+            opcoes.append(linha.split(")", 1)[1].strip())
+        elif "resposta correta" in linha.lower():
+            letra = linha.split(":")[1].strip().upper()[0]
+            correta = {"A": 0, "B": 1, "C": 2, "D": 3}[letra]
+
+    # Em caso de erro de parsing
+    if not pergunta or len(opcoes) < 4:
+        pergunta = "Qual desses é um animal?"
+        opcoes = ["Cadeira", "Carro", "Cachorro", "Pedra"]
+        correta = 2
+
+    # Embaralha opções para não repetir sempre igual
+    indices = list(range(len(opcoes)))
+    random.shuffle(indices)
+    opcoes = [opcoes[i] for i in indices]
+    correta = indices.index(correta)
+
+    return pergunta, opcoes, correta

@@ -1,13 +1,14 @@
 import os
-from supabase import create_client
+from supabase import Client, create_client
 
-# Pega as variáveis do ambiente
+# Variáveis de ambiente
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
-# Cria cliente do Supabase
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Cria o cliente Supabase (v2)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Funções para gerenciar usuários e pontos
 def get_user(user_id):
     res = supabase.table("usuarios").select("*").eq("user_id", user_id).execute()
     if res.data:
@@ -21,7 +22,7 @@ def update_points(user_id, pontos_ganhos):
     user = get_user(user_id)
     novos_pontos = user["pontos"] + pontos_ganhos
     nivel = user["nivel"]
-    pontos_para_subir = 100 * nivel
+    pontos_para_subir = 100 * nivel  # cada level precisa de mais pontos
 
     while novos_pontos >= pontos_para_subir:
         novos_pontos -= pontos_para_subir

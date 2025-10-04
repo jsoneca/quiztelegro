@@ -1,6 +1,6 @@
-/ (raiz do projeto)
+/telegram-quiz-bot
 ├── main.py
 ├── storage_supabase.py
 ├── quiz_ai.py
 ├── requirements.txt
-└── Dockerfile
+└── .github/workflows/bot.yml
